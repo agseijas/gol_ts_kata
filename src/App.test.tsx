@@ -41,10 +41,10 @@ it('lone cell dies after one beat', () => {
 
   let newWorld = beat(world);
 
-  expect(newWorld).toEqual([[0,0]])
+  expect(newWorld).toEqual([[0, 0]])
 });
 
-it('cell in overpopulation dies after one beat', () => {
+it('cell in overpopulation dies after one beat, and one is born', () => {
   var world = [
     [1, 1, 0],
     [1, 1, 1]
@@ -52,7 +52,22 @@ it('cell in overpopulation dies after one beat', () => {
 
   let newWorld = beat(world);
 
-  expect(newWorld).toEqual([[1, 0, 0], [1, 0, 1]])
+  expect(newWorld).toEqual([[1, 0, 1], [1, 0, 1]])
+});
+
+it('world evolves as expected', () => {
+  var world = [
+    [1, 1, 0],
+    [1, 1, 1]
+  ];
+
+  let newWorld = beat(world);
+  expect(newWorld).toEqual([
+    [1, 0, 1], 
+    [1, 0, 1]])
+
+  newWorld = beat(newWorld);
+  expect(newWorld).toEqual([[0, 0, 0], [0, 0, 0]])
 });
 
 function beat(world: number[][]) {
@@ -61,22 +76,24 @@ function beat(world: number[][]) {
     line.map((cell, y) => {
       let numAliveCells = countAliveNeighboursForCell(world, x, y)
 
-      if(numAliveCells < 2 || numAliveCells > 3){
+      if (numAliveCells < 2 || numAliveCells > 3) {
         newWorld[x][y] = 0
+      } else if (numAliveCells == 3) {
+        newWorld[x][y] = 1
       }
     });
   });
   return newWorld
 }
 
-function cloneArray(world: number[][]) {  
+function cloneArray(world: number[][]) {
   var clone = [];
-  for (let i=0; i<world.length; i++) {
-    clone.push( world[i].slice(0) )
+  for (let i = 0; i < world.length; i++) {
+    clone.push(world[i].slice(0))
   }
   return clone
 }
- 
+
 
 function countAliveNeighboursForCell(world: number[][], posx: number, posy: number) {
   return getNeighboursForCell(world, posx, posy).filter(cell => cell == 1).length
